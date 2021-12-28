@@ -1,8 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity, TouchableHighlight, TextInput, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TouchableHighlight, TextInput, ScrollView, Alert } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { theme } from "./color";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 
 const STORAGE_KEY = "@toDos";
 
@@ -32,6 +33,19 @@ export default function App() {
     await saveToDos(newToDos);
     setText("");
   }
+  const deleteToDo = async (key) => {
+    Alert.alert(
+      "삭제?", "ㄹㅇ?", [
+        {text: "ㄴㄴ"},
+        {text: "ㅇㅇ", onPress: async() => {
+          const newToDos = {...toDos}  // object 복제
+          delete newToDos[key];
+          setToDos(newToDos);
+          await saveToDos(newToDos);
+        }},
+    ]);
+    return;
+  }
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
@@ -50,6 +64,9 @@ export default function App() {
         {Object.keys(toDos).map((key) =>
           toDos[key].working === working ? <View style={styles.toDo} key={key}>
             <Text style={styles.toDoText}>{toDos[key].text}</Text>
+            <TouchableOpacity onPress={() => deleteToDo(key)}>
+              <Ionicons name="md-trash-sharp" size={20} color={theme.grey} />
+            </TouchableOpacity>
           </View> : null
         )}
       </ScrollView>
@@ -86,6 +103,9 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 20,
     borderRadius: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: 'space-between',
   },
   toDoText:{
     color: "white",
